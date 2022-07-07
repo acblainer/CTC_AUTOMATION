@@ -13,3 +13,6 @@ We are initializing a project for automating massive manual work at CTC
   - only build the selling curve for the styles that has the exact start week.
   - Question 1: what is dmdunit and why it has to start with C_
   - 
+  
+**Adam**:
+Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.

@@ -18,7 +18,7 @@ print(sys.version_info)
 import os
 import platform
 # This is the path to the ORACLE client files
-lib_dir = r"C:\Users\yongpeng.fu\OneDrive - Canadian Tire\Desktop\CTC Work\From Christy\History Modeling\Automate the Selling Curve Builder\instantclient-basic-windows.x64-21.6.0.0.0dbru\instantclient_21_6"
+lib_dir = r"..\instantclient-basic-windows.x64-21.6.0.0.0dbru\instantclient_21_6"
 
 # Diagnostic output to verify 64 bit arch and list files
 print("ARCH:", platform.architecture())
@@ -59,6 +59,7 @@ engine = create_engine(ENGINE_PATH_WIN_AUTH)
 
 import pandas as pd
 import numpy as np
+from datetime import date
 import tkinter as tk
 from tkinter import filedialog
 
@@ -69,7 +70,7 @@ file_path = filedialog.askopenfilename()
 HIST_MOD_Template = pd.ExcelFile(file_path)
 print(HIST_MOD_Template.sheet_names)
 #to read just 'TRACKER' sheet to dataframe
-HIST_MOD_Template_TRACKER = pd.read_excel(r'K:\Logistics\_DFP Reports - Menswear\2022\F22 Setup\F22_HIST MOD Template.xlsx', sheet_name = "TRACKER")
+HIST_MOD_Template_TRACKER = pd.read_excel(HIST_MOD_Template, sheet_name = "TRACKER")
 HIST_MOD_Template_TRACKER.dropna(how = "all", inplace = True, subset=["Style Number"])
 #create the Curve Name and Copy it into Curve ID column as well
 HIST_MOD_Template_TRACKER['CURVE NAME'] = \
@@ -186,9 +187,7 @@ for row in range(comm_or_diss.shape[0]):
     curve_name.add(comm_or_diss[row][4])
 #combine a list of curves together
 upload_file_curve_list_pandas = pd.concat(upload_file_curve_list)
-upload_file_curve_list_pandas.to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire"
-                                                        "\\Desktop\\UDT_HISTMODESETUP_F22_CURVE.xlsx"), index = False)
+upload_file_curve_list_pandas.to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\UDT_SELLINGCURVE_" + os.getlogin() + "_"
+                   + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
 HIST_MOD_Template_TRACKER.loc[:,"STYLE":"RUN_FLAG"].to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire"
-                                                        "\\Desktop\\UDT_HISTMODESETUP_F22.xlsx"), index = False)
-
-
+                                                        "\\Desktop\\UDT_HISTMODESETUP_F22_TEMPLATE_" + os.getlogin() + ".xlsx"), index = False)

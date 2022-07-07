@@ -11,3 +11,5 @@ We are initializing a project for automating massive manual work at CTC
   - Looking at the selling curve at the style level can make the prediction better
   - use machine learning to group similar styles together so that the same selling curve can be applied to them
   - only build the selling curve for the styles that has the exact start week.
+  - Question 1: what is dmdunit and why it has to start with C_
+  - 

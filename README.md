@@ -12,7 +12,8 @@ We are initializing a project for automating massive manual work at CTC
   - use machine learning to group similar styles together so that the same selling curve can be applied to them
   - only build the selling curve for the styles that has the exact start week.
   - Question 1: what is dmdunit and why it has to start with C_
-  - 
+  - Question 2: implement the season (S1,S2,S3,S4) based on the season we are in right now
+  - QUestion 3: do we need to remove duplicates when copy and paste the yellow portion of the Tracker to "2A_CE_UDT_HISTMODESETUP_F22 TEMPLATE FOR YONG"
   
 **Adam**: (not tracked)
 - (July 7 2022): Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.

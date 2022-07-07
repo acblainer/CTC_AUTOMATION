@@ -2,7 +2,7 @@
 We are initializing a project for automating massive manual work at CTC
 
 ## Step 1: name a list of tasks you think you want to automate.
-**Yong**
+**Yong** 
 - Selling Curve: I am in the process of creating a bot (90% work done)
 - Some comments from Christy.
   - Make the code more flexible to accept user input
@@ -15,4 +15,4 @@ We are initializing a project for automating massive manual work at CTC
   - 
   
 **Adam**:
-Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.
+- Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.

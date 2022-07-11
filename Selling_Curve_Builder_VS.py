@@ -75,13 +75,13 @@ HIST_MOD_Template_TRACKER.dropna(how = "all", inplace = True, subset=["Style Num
 #create the Curve Name and Copy it into Curve ID column as well
 HIST_MOD_Template_TRACKER['CURVE NAME'] = \
 pd.Series(np.where(HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"].isnull(), 
-         HIST_MOD_Template_TRACKER["HIST MOD SETTING - COMMODITY"].str.split().str[1],
-        HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"])) \
+         HIST_MOD_Template_TRACKER["HIST MOD SETTING - COMMODITY"].str.split().str[0],
+        HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"].str.split().str[0])) \
 + "-" + HIST_MOD_Template_TRACKER["Selling Cycle"]\
 + "-" + HIST_MOD_Template_TRACKER["START WK"].str.replace(' ','')\
 + "-" + HIST_MOD_Template_TRACKER["END WK"].str.replace(' ','')
 HIST_MOD_Template_TRACKER['CURVE_ID'] = HIST_MOD_Template_TRACKER['CURVE NAME']
-HIST_MOD_Template_TRACKER['SUBMIT_DATE'] = pd.Timestamp("today").strftime("%Y-%m-%d")
+HIST_MOD_Template_TRACKER['SUBMIT_DATE'] = pd.Timestamp("today").strftime('%Y/%m/%d')
 
 #connetion string using SQLAIchemy
 DIALECT = 'oracle'
@@ -116,8 +116,8 @@ def selling_cycle_mapper(cycle):
     
 #create a new array with 0 indicate to use COMMODITY and 1 for DISSECTION during SQL query
 comm_or_diss = np.column_stack((np.where(HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"].isnull(), 
-         "M_" + HIST_MOD_Template_TRACKER["HIST MOD SETTING - COMMODITY"].str.split().str[1],
-        HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"]),
+         "M_" + HIST_MOD_Template_TRACKER["HIST MOD SETTING - COMMODITY"].str.split().str[0],
+        HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"].str.split().str[0]),
                               np.where(HIST_MOD_Template_TRACKER["HIST MOD SETTING - DISSECTION"].isnull(), 
                                        0,1), HIST_MOD_Template_TRACKER[["START WK", "END WK", "CURVE NAME", "Selling Cycle"]].to_numpy()))
 
@@ -189,5 +189,7 @@ for row in range(comm_or_diss.shape[0]):
 upload_file_curve_list_pandas = pd.concat(upload_file_curve_list)
 upload_file_curve_list_pandas.to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\UDT_SELLINGCURVE_" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
+#change the date format
+HIST_MOD_Template_TRACKER['MODEL_START_DATE'] = HIST_MOD_Template_TRACKER['MODEL_START_DATE'].dt.strftime('%Y/%m/%d')
 HIST_MOD_Template_TRACKER.loc[:,"STYLE":"RUN_FLAG"].to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire"
                                                         "\\Desktop\\UDT_HISTMODESETUP_F22_TEMPLATE_" + os.getlogin() + ".xlsx"), index = False)

@@ -17,6 +17,7 @@ We are initializing a project for automating massive manual work at CTC
 - Create the tool for store consolidation (july 7 2022)
   - I have created the Store class to track the information of a store, including its ranking in the whole store list, and making transfer between this store and the whole store list
   - Now I am implementing the logic like when and how I should transfer the store item
+  -**It will make a difference when you choose AS_All Season vs the others**
   
 **Adam**: (not tracked)
 - (July 7 2022): Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.

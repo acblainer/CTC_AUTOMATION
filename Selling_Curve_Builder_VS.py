@@ -177,7 +177,12 @@ curve_name = set()
 for row in range(comm_or_diss.shape[0]):
     if comm_or_diss[row][4] not in curve_name:
         one_curve = query_to_use(comm_or_diss[row][0],comm_or_diss[row][1], comm_or_diss[row][2],comm_or_diss[row][3])
-        final_one_curve = one_curve.loc[wk_list(comm_or_diss[row][2], comm_or_diss[row][3])]
+        #it will make a difference when I using AS-All Season for Selling Cycle in the selling curve builder. 
+        # I guess it is taking all year ratio as the final result, regardless of the Instore week and Endweek
+        if (comm_or_diss[row][5] == 'All Season'):
+            final_one_curve = one_curve
+        else:
+            final_one_curve = one_curve.loc[wk_list(comm_or_diss[row][2], comm_or_diss[row][3])]
         final_one_curve["CURVE_ID"] = comm_or_diss[row][4]
         final_one_curve["SELLING_CYCLE"] = selling_cycle_mapper(comm_or_diss[row][5])
         final_one_curve["PERIOD_NUM"] = np.arange(1,len(final_one_curve)+1)

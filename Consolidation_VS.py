@@ -103,7 +103,6 @@ class Store:
         #NOTE I only calculate the stores that have the same Region as sending store
         self.store_rank = (((Store.store_capacity[list(set(Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']].PA_Store))]) * \
                             (self.matching_series/self.matching_series.sum())).sort_values(ascending=False))
-
 #Transfer one sending store A to a list of receiving stores B
 def consolidation(sending_store, all_store):
     #(1): initiate the store object
@@ -147,13 +146,23 @@ def consolidation(sending_store, all_store):
 def output_stores(*stores):
     store_list = []
     for store in stores:
+        tem_store_copy = store.one_store_copy.copy()
+        tem_store_output = store.one_store_copy.loc[:,['Sending_Store', 'Style', 'Sku', 'OH']]
         for store_id,sku_list in store.receiving_store.items():
-            store.one_store_copy['Sku'] = np.where(store.one_store_copy['Sku'].isin(store.receiving_store[store_id]), store_id, store.one_store_copy['Sku'])
-        tem_store_output = store.one_store_copy.loc[:,['Sending_Store', 'Sku', 'Style', 'OH']]
-        tem_store_output.loc[:,'Receiving_Store'] = tem_store_output['Sku']
-        tem_store_output.loc[:,'Sku'] = store.one_store['Sku']
-        store_list.append(tem_store_output)
+            tem_store_copy['Sku'] = np.where(tem_store_copy['Sku'].isin(sku_list), store_id, tem_store_copy['Sku'])
+        tem_store_output['Receiving_Store'] = tem_store_copy['Sku']
+        tem_store_output['Qty'] = tem_store_output['OH']
+        tem_store_output['Choice'] = np.nan
+        tem_store_output['Cost'] = np.nan
+        tem_store_output['Retail'] = np.nan
+        final_store_output = tem_store_output[['Sending_Store', 'Receiving_Store', 'Style', 'Choice', 'Sku', 'Qty', 'Cost', 'Retail']]
+        store_list.append(final_store_output)
     return pd.concat(store_list)
+
+#read in the file for consolidation
+def sending_receiving_stores():
+    pass
+
 #Client side to use the above class and methods
 test = consolidation(Sending_Info_group, PA_Info_group)
 output_stores(test).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\Consolidation_" + os.getlogin() + "_"

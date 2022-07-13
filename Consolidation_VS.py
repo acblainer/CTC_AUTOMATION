@@ -16,9 +16,13 @@ Sending_Info = pd.read_excel(file_path, sheet_name = "Sending Info")
 PA_Info = pd.read_excel(file_path, sheet_name = "PA Info")
 #group same Sku together for both info sheet
 Sending_Info_group = Sending_Info.groupby(['Sending_Store', 'Comm', 'Style','Sku','Region'],as_index = False)['OH'].sum()
+#remove the sending store id in the PA_Info sheet
+PA_Info = PA_Info.loc[~PA_Info.PA_Store.isin(set(Sending_Info['Sending_Store']))]
 PA_Info_group = PA_Info.groupby(['PA_Store', 'Comm', 'Style','Sku','Region'],as_index = False)['PA for the year'].sum()
 
 #create a store class so that once one store get transferred, the master sheet is modified at the same time
+#we need to remove all the sending store id in the receiving store B list
+
 class Store:
     #The information for all stores combined
     all_store = None
@@ -56,13 +60,9 @@ class Store:
         self.matching_series = pd.Series(Store.__find_match(self.all_store_same_region, self.one_store),
                                         name = "matched_series_same_region")
         #the rank of each store based on the total capacity of a store and weighted with the percentage of matching number
-        #this variable excludes the sending store ID (we dont need the rank of itself)
+        #this variable has excluded the sending store ID (we dont need the rank of itself)
         #NOTE I only calculate the stores that have the same Region as sending store
-        if self.one_store.iloc[0,0] in self.matching_series.index:
-            self.store_rank = (((Store.store_capacity[list(set(Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']].PA_Store))]) * \
-                            (self.matching_series/self.matching_series.sum())).sort_values(ascending=False)).drop(self.one_store.iloc[0,0])
-        else:
-            self.store_rank = (((Store.store_capacity[list(set(Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']].PA_Store))]) * \
+        self.store_rank = (((Store.store_capacity[list(set(Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']].PA_Store))]) * \
                             (self.matching_series/self.matching_series.sum())).sort_values(ascending=False))
     #when a list of skus from store (A) are transferred to another store (B):
     #(1) update the SKU (PA for the year in store B) with the corresponding OH from A store
@@ -75,9 +75,7 @@ class Store:
         sku_list_map = self.one_store[self.one_store.Sku.isin(sku_list)].set_index('Sku')['OH'].to_dict()
         tem = Store.all_store.loc[Store.all_store.PA_Store == store_id, 'Sku'].map(sku_list_map).fillna(0)
         Store.all_store.loc[Store.all_store.PA_Store == store_id,'PA for the year'] -= tem
-        #add new value to SKU column when that SKU is not matched? (no need to do this)
-        #Lets delete this sending store id in the all_store sheet so that the coming sending store wont be transferred to the old sneding store in the master sheet
-        Store.all_store.drop(Store.all_store[Store.all_store.PA_Store == self.one_store.iloc[0,0]].index, inplace=True)
+
         #then update the all_store_same_region as well based on the new all_store
         self.all_store_same_region = Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']]
         
@@ -103,6 +101,7 @@ class Store:
         #NOTE I only calculate the stores that have the same Region as sending store
         self.store_rank = (((Store.store_capacity[list(set(Store.all_store.loc[Store.all_store.Region == self.one_store.loc[0, 'Region']].PA_Store))]) * \
                             (self.matching_series/self.matching_series.sum())).sort_values(ascending=False))
+                            
 #Transfer one sending store A to a list of receiving stores B
 def consolidation(sending_store, all_store):
     #(1): initiate the store object

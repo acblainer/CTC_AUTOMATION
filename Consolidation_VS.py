@@ -165,8 +165,6 @@ Sending_Info_group = Sending_Info.groupby(['Sending_Store','Sku','Region'],as_in
 #remove the sending store id in the PA_Info sheet
 PA_Info = PA_Info.loc[~PA_Info.PA_Store.isin(set(Sending_Info['Sending_Store']))]
 PA_Info_group = PA_Info.groupby(['PA_Store','Sku','Region'],as_index = False)['PA for the year'].sum()
-display(Sending_Info_group.head(2))
-display(PA_Info_group.head(2))
 
 #do the actual consolidation store by store
 sending_store_list = []

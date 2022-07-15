@@ -141,7 +141,7 @@ Group By c.CALCWY
 Order By c.CALCWY
 '''
 selling_curve_query_diss = '''
-Select c.CALCWY WEEK
+Select c.CALCWY WEEK 
 ,sum((Case When c.CALCYR = 2019 Then nvl(h.qty,0) Else 0 End)) Year_2019
 ,sum((Case When c.CALCYR = 2020 Then nvl(h.qty,0) Else 0 End)) Year_2020
 ,sum((Case When c.CALCYR = 2021 Then nvl(h.qty,0) Else 0 End)) Year_2021

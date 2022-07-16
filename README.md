@@ -25,8 +25,7 @@ We are initializing a project for automating massive manual work at CTC
 
 **Yong July 16 2022**
 # Find exact match for consolidation
-After talking with Linda onJuly 14 2022, we have to modify the consolidation rules. The following is rule from last time, which is called fuzzy match.
-![image.png](attachment:image.png)
+After talking with Linda onJuly 14 2022, we have to modify the consolidation rules. The rule from last time (Consolidation_VS) is called fuzzy match.
 
 Now we need to modify the code so that all the skus have a 100% match.
 
@@ -34,7 +33,7 @@ Now we need to modify the code so that all the skus have a 100% match.
 - NOTE: each sku is unique....in that they are attached to a style number...think SKU = SIZE
 - Find all the stores B that have the same region (East/West) as store A
 - Remove all the sending stores A ID in the receiving stores B list (you dont have to worry about this because the SKUs in the sending stores has no overlap with other sending stores.
-- (1) Rank each store B based on the each total PA and with different weight on them. 
+- (1) **Each time** you do transfer, re-rank each store B based on the each total PA and with different weight on them. 
     - The weight is calculated as follows:
     > Step 1: find the how many SKUs (that are > 0 OH or PA for the year) are matched between store A with each store B
     
@@ -44,7 +43,7 @@ Now we need to modify the code so that all the skus have a 100% match.
     
 - (2) Loop through each sending store A and find the highest rank for each of them, and start transfering with the following conditions:
     - Rule #1: one particular store B can only accept 250 units lifetime maximum
-    - Rule #2: transfer the matched SKUs from sending store A to Store B, but only transfer as much Store B can accpet for one particular SKU.
+    - Rule #2: transfer the matched SKUs from sending store A to Store B, but only transfer as much Store B can accpet for one particular SKU. However, if there are 4 units or less to be transferred to one particular store, STOP. Do not transfer.
     - Rule #3: the remaining SKUs will go through (1), find the best Store B to transfer, then again only  transfer the matched SKUs from sending store A to Store B, but only transfer as much Store B can accpet for one particular SKU.
     - Rule #4: you keep going this process until you finish up all the SKUs, or you reach the end of receiving stores B, whichever comes first.
    

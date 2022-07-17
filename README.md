@@ -1,5 +1,7 @@
 # CTC_AUTOMATION
 We are initializing a project for automating massive manual work at CTC
+A small hack: how to install and import one package using script [linke](https://stackoverflow.com/questions/12332975/installing-python-module-within-code)
+
 
 ## Name a list of tasks you think you want to automate.
 **Yong** 
@@ -49,3 +51,5 @@ Now we need to modify the code so that all the skus have a 100% match.
     - Rule #4: you keep going this process until you finish up all the SKUs, or you reach the end of receiving stores B, whichever comes first.
    
 - (3) I would use only high and medium hub stores only.  And region still matters when choosing which hub stores you send remaining transfers (4 units and less +units you could not find a match). An East store can only send to a East hub store
+
+

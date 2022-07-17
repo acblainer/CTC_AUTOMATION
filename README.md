@@ -1,5 +1,5 @@
 # CTC_AUTOMATION
-We are initializing a project for automating massive manual work at CTC
+We are initializing a project for automating massive manual work at CTC.  
 A small hack: how to install and import one package using script [linke](https://stackoverflow.com/questions/12332975/installing-python-module-within-code)
 
 

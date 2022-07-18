@@ -6,6 +6,7 @@ from tkinter import filedialog
 from collections import defaultdict
 import os
 from datetime import date
+import random
 #we need to remove all the sending store id in the receiving store B list
 
 class Store:
@@ -149,7 +150,7 @@ def output_stores(consolidated_stores_list):
     store_list = []
     for store in consolidated_stores_list:
         multi_index = pd.MultiIndex.from_tuples(store.receiving_store.keys(), 
-                                                names=["Sending_Store", "Receiving_Store", 'SKU'])
+                                                names=["Sending_Store", "Receiving_Store", 'Sku'])
         store_transferred = pd.DataFrame(store.receiving_store.values(), 
                                          index = multi_index, columns = ['Qty']).reset_index()
         
@@ -163,17 +164,33 @@ root.withdraw()
 file_path = filedialog.askopenfilename()
 Sending_Info = pd.read_excel(file_path, sheet_name = "Sending Info").dropna(how='all', subset = ['Sending_Store', 'Region'])
 PA_Info = pd.read_excel(file_path, sheet_name = "PA Info").dropna(how='all', subset = ['PA_Store', 'Region'])
+Region_info = pd.read_excel(file_path, sheet_name = "Region", usecols = "A,F,K",skiprows = range(0,4), header = 0)
+Region_info_hub = Region_info.loc[Region_info['Hub Designation'].str.contains('High|Medium', na=False,regex = True)].reset_index(drop = True)
+Region_info_hub_dict = Region_info_hub.groupby('Region')['STR'].apply(lambda g: g.values.tolist()).to_dict()
 #group same Sku together for both info sheet
 Sending_Info_group = Sending_Info.groupby(['Sending_Store','Sku','Region'],as_index = False)['OH'].sum()
 #remove the sending store id in the PA_Info sheet
 PA_Info = PA_Info.loc[~PA_Info.PA_Store.isin(set(Sending_Info['Sending_Store']))]
 PA_Info_group = PA_Info.groupby(['PA_Store','Sku','Region'],as_index = False)['PA for the year'].sum()
 
-# #do the actual consolidation store by store
-# sending_store_list = []
-# for key, group in Sending_Info_group.groupby('Sending_Store'):
-#     sending_storeA = consolidation(group.reset_index(), PA_Info_group)
-#     sending_store_list.append(sending_storeA)
-# #generate the result
-# output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\test" + os.getlogin() + "_"
-#                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
+#do the actual consolidation store by store
+sending_store_list = []
+#deal with the reamining skus
+remaining_sku_list = []
+for key, group in Sending_Info_group.groupby('Sending_Store'):
+    sending_storeA = consolidation(group.reset_index(drop = True), PA_Info_group)
+    sending_store_list.append(sending_storeA)
+    if(len(sending_storeA.one_store.query('OH>0')) >0):
+        hub_store_same_region = Region_info_hub_dict[sending_storeA.one_store.loc[0,'Region']]
+        #I shuffle the hub store order in this particular region so that one hub store does not end up receiving all the SKUs
+        random.shuffle(hub_store_same_region)
+        hub_store_same_region_output = sending_storeA.one_store.loc[sending_storeA.one_store['OH'] > 0].reset_index(drop = True)
+        hub_store_same_region_output.rename(columns={'OH': 'Qty'}, inplace = True)
+        hub_store_same_region_output.loc[:,'Receiving_Store'] = hub_store_same_region[0]
+        remaining_sku_list.append(hub_store_same_region_output.loc[:,['Sending_Store', 'Receiving_Store', 'Sku', 'Qty']])
+
+#generate the result
+output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list_6mth" + os.getlogin() + "_"
+                   + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
+pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list_6mth" + os.getlogin() + "_"
+                   + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)

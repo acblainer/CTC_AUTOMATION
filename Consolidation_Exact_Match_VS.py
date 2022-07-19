@@ -114,7 +114,7 @@ def consolidation(sending_store, all_store):
     
     #(3): going through the receiving store in this order and 
     #if one store has not received 250 units in total before, starts transferring.
-    total_receiving_number = 250
+    total_receiving_number = 500
     #every time a store is used to receive some SKUs, I will remove it from the store_rank_list
     removed_store_id = []
     #current_store_rank_list is what remained after removing the used store
@@ -190,7 +190,7 @@ for key, group in Sending_Info_group.groupby('Sending_Store'):
         remaining_sku_list.append(hub_store_same_region_output.loc[:,['Sending_Store', 'Receiving_Store', 'Sku', 'Qty']])
 
 #generate the result
-output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list_6mth" + os.getlogin() + "_"
+output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list_6mth_500" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
-pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list_6mth" + os.getlogin() + "_"
+pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list_6mth_500" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)

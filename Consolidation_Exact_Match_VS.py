@@ -163,10 +163,12 @@ root = tk.Tk()
 root.withdraw()
 file_path = filedialog.askopenfilename()
 Sending_Info = pd.read_excel(file_path, sheet_name = "Sending Info").dropna(how='all', subset = ['Sending_Store', 'Region'])
-PA_Info = pd.read_excel(file_path, sheet_name = "PA Info").dropna(how='all', subset = ['PA_Store', 'Region'])
-Region_info = pd.read_excel(file_path, sheet_name = "Region", usecols = "A,F,K",skiprows = range(0,4), header = 0)
+PA_Info = pd.read_excel(file_path, sheet_name = "PA Info 12mth").dropna(how='all', subset = ['PA_Store', 'Region'])
+Region_info = pd.read_excel(file_path, sheet_name = "Region", usecols = "A,F,K, O",skiprows = range(0,4), header = 0)
 Region_info_hub = Region_info.loc[Region_info['Hub Designation'].str.contains('High|Medium', na=False,regex = True)].reset_index(drop = True)
-Region_info_hub_dict = Region_info_hub.groupby('Region')['STR'].apply(lambda g: g.values.tolist()).to_dict()
+Region_info_province_dict = Region_info_hub.groupby('Province')['STR'].apply(lambda g: g.values.tolist()).to_dict()
+#Create a dictionary for each store to have a corresponing province
+Region_info_store_province_dict = Region_info.loc[:,["STR", "Province"]].set_index("STR").to_dict()['Province']
 #group same Sku together for both info sheet
 Sending_Info_group = Sending_Info.groupby(['Sending_Store','Sku','Region'],as_index = False)['OH'].sum()
 #remove the sending store id in the PA_Info sheet
@@ -181,16 +183,23 @@ for key, group in Sending_Info_group.groupby('Sending_Store'):
     sending_storeA = consolidation(group.reset_index(drop = True), PA_Info_group)
     sending_store_list.append(sending_storeA)
     if(len(sending_storeA.one_store.query('OH>0')) >0):
-        hub_store_same_region = Region_info_hub_dict[sending_storeA.one_store.loc[0,'Region']]
+        #Store 181 and 193 should go to hub store 46, 59, 301 those are the closest
+        if sending_storeA.one_store.loc[0,'Sending_Store'] in [181, 193]:
+            hub_store_same_province = [46, 59, 301]
+        #Newfoundland can go to any Nova Scotia or New Brunswick hub
+        elif Region_info_store_province_dict[sending_storeA.one_store.loc[0,'Sending_Store']] == 'Newfoundland':
+            hub_store_same_province = list(np.concatenate([value for key, value in Region_info_province_dict.items() if key in ['Nova Scotia', 'New Brunswick']]).flat)
+        else:
+            hub_store_same_province = Region_info_province_dict[Region_info_store_province_dict[sending_storeA.one_store.loc[0,'Sending_Store']]]
         #I shuffle the hub store order in this particular region so that one hub store does not end up receiving all the SKUs
-        random.shuffle(hub_store_same_region)
-        hub_store_same_region_output = sending_storeA.one_store.loc[sending_storeA.one_store['OH'] > 0].reset_index(drop = True)
-        hub_store_same_region_output.rename(columns={'OH': 'Qty'}, inplace = True)
-        hub_store_same_region_output.loc[:,'Receiving_Store'] = hub_store_same_region[0]
-        remaining_sku_list.append(hub_store_same_region_output.loc[:,['Sending_Store', 'Receiving_Store', 'Sku', 'Qty']])
+        random.shuffle(hub_store_same_province)
+        hub_store_same_province_output = sending_storeA.one_store.loc[sending_storeA.one_store['OH'] > 0].reset_index(drop = True)
+        hub_store_same_province_output.rename(columns={'OH': 'Qty'}, inplace = True)
+        hub_store_same_province_output.loc[:,'Receiving_Store'] = hub_store_same_province[0]
+        remaining_sku_list.append(hub_store_same_province_output.loc[:,['Sending_Store', 'Receiving_Store', 'Sku', 'Qty']])
 
 #generate the result
-output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list_6mth_500" + os.getlogin() + "_"
+output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
-pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list_6mth_500" + os.getlogin() + "_"
+pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)

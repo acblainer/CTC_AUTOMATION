@@ -114,7 +114,7 @@ def consolidation(sending_store, all_store):
     
     #(3): going through the receiving store in this order and 
     #if one store has not received 250 units in total before, starts transferring.
-    total_receiving_number = 500
+    total_receiving_number = 750
     #every time a store is used to receive some SKUs, I will remove it from the store_rank_list
     removed_store_id = []
     #current_store_rank_list is what remained after removing the used store
@@ -162,8 +162,8 @@ def output_stores(consolidated_stores_list):
 root = tk.Tk()
 root.withdraw()
 file_path = filedialog.askopenfilename()
-Sending_Info = pd.read_excel(file_path, sheet_name = "Sending Info").dropna(how='all', subset = ['Sending_Store', 'Region'])
-PA_Info = pd.read_excel(file_path, sheet_name = "PA Info 12mth").dropna(how='all', subset = ['PA_Store', 'Region'])
+Sending_Info = pd.read_excel(file_path, sheet_name = "Sending Info").dropna(how='any', subset = ['Sending_Store', 'Region'])
+PA_Info = pd.read_excel(file_path, sheet_name = "PA Info").dropna(how='any', subset = ['PA_Store', 'Region'])
 Region_info = pd.read_excel(file_path, sheet_name = "Region", usecols = "A,F,K, O",skiprows = range(0,4), header = 0)
 Region_info_hub = Region_info.loc[Region_info['Hub Designation'].str.contains('High|Medium', na=False,regex = True)].reset_index(drop = True)
 Region_info_province_dict = Region_info_hub.groupby('Province')['STR'].apply(lambda g: g.values.tolist()).to_dict()
@@ -172,7 +172,7 @@ Region_info_store_province_dict = Region_info.loc[:,["STR", "Province"]].set_ind
 #group same Sku together for both info sheet
 Sending_Info_group = Sending_Info.groupby(['Sending_Store','Sku','Region'],as_index = False)['OH'].sum()
 #remove the sending store id in the PA_Info sheet
-PA_Info = PA_Info.loc[~PA_Info.PA_Store.isin(set(Sending_Info['Sending_Store']))]
+#PA_Info = PA_Info.loc[~PA_Info.PA_Store.isin(set(Sending_Info['Sending_Store']))]
 PA_Info_group = PA_Info.groupby(['PA_Store','Sku','Region'],as_index = False)['PA for the year'].sum()
 
 #do the actual consolidation store by store
@@ -199,7 +199,7 @@ for key, group in Sending_Info_group.groupby('Sending_Store'):
         remaining_sku_list.append(hub_store_same_province_output.loc[:,['Sending_Store', 'Receiving_Store', 'Sku', 'Qty']])
 
 #generate the result
-output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list" + os.getlogin() + "_"
+output_stores(sending_store_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\sending_store_list_12mth_750_with4_allstore" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)
-pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list" + os.getlogin() + "_"
+pd.concat(remaining_sku_list).to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\remaining_sku_list_12mth_750_with4_allstore" + os.getlogin() + "_"
                    + date.today().strftime("%b") + date.today().strftime("%d") + ".xlsx"), index = False)

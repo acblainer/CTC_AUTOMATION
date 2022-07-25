@@ -1,4 +1,9 @@
 from tkinter import *
+from tkinter import filedialog
+from tkinter import ttk
+import time
+from tkinter import messagebox
+import threading
 
 root = Tk()
 #give a title of the root window
@@ -17,6 +22,17 @@ e.insert(0, "This is to show you which tool you have chosen!")
 e.config(state = 'disabled')
 e.grid(row = 0, column = 0, columnspan = 4, padx = 5, pady = 20)
 
+#then I will create a progression bar for any tool being used
+progress_bar = ttk.Progressbar(root, orient = HORIZONTAL, length = 150, mode = 'indeterminate')
+
+#the function to be used in another thread
+def real_work(n):
+    time.sleep(n)
+    progress_bar.stop()
+    messagebox.showinfo(title = "Result", message = "Job Done!")
+    #after the job is done remove the progression bar
+    progress_bar.destroy()
+
 #define a function to update the text inside entry widget
 def button_click(text_button):
     e.config(state = 'normal')
@@ -24,16 +40,35 @@ def button_click(text_button):
     e.insert(0, text_button)
     e.config(state = 'disabled')
     if text_button.split()[0].lower() == "selling":
-        pass
+        file_path = filedialog.askopenfilename()
+        file_location_input.insert(0,file_path)
+        #put the progression bar in there
+        progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
+        progress_bar.start(18)
+        #start the real job in another thread
+        threading.Thread(target = real_work, args = (10,)).start()
+
     if text_button.split()[0].lower() == "consolidation":
-        pass
+        file_path = filedialog.askopenfilename()
+        file_location_input.insert(0,file_path)
+        #put the progression bar in there
+        progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
+        progress_bar.start(18)
+        #start the real job in another thread
+        threading.Thread(target = real_work, args = (10,)).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
-button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 50, command = lambda:button_click('Selling Curve Tool Selected'))
+button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 100, command = lambda:button_click('Selling Curve Tool Selected'))
 button_selling.grid(row = 2, column = 0, columnspan = 2, sticky=NSEW)
-Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 50,command = lambda:button_click('Consolidation Tool Selected'))
+Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 100,command = lambda:button_click('Consolidation Tool Selected'))
 Consolidaiton.grid(row = 2, column = 2,columnspan = 2, sticky=NSEW)
 #parameters for each tool
-#you need the file path
+#you need the file path at least
+file_location = Label(root, text = "File Location:")
+file_location.grid(row = 3, column = 0)
+file_location_input = Entry(root, width = 75, borderwidth=3, justify = CENTER)
+file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20)
+
+
 
 root.mainloop()

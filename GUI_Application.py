@@ -5,6 +5,7 @@ import time
 from tkinter import messagebox
 import threading
 from PIL import ImageTk, Image
+from CTC_Automation_Package import Selling_Curve_N_Consolidation
 
 root = Tk()
 #give a title of the root window
@@ -31,13 +32,19 @@ logo_label.grid(row = 0, column = 0)
 #then I will create a progression bar for any tool being used
 progress_bar = ttk.Progressbar(root, orient = HORIZONTAL, length = 150, mode = 'indeterminate')
 
-#the function to be used in another thread
-def real_work(n):
-    time.sleep(n)
+
+#funtion to do the selling curve work, the function to be used in another thread
+def Selling_Curve(file_path):
+    Selling_Curve_N_Consolidation.selling_curve_prep()
+    Selling_Curve_N_Consolidation.read_query_output(file_path)
     progress_bar.stop()
     messagebox.showinfo(title = "Result", message = "Job Done!")
     #after the job is done remove the progression bar
     progress_bar.grid_forget()
+
+#funtion to do the selling curve work, the function to be used in another thread
+def consolidation(file_path):
+    pass
 
 #define a function to update the text inside entry widget
 def button_click(text_button):
@@ -52,7 +59,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = real_work, args = (10,)).start()
+        threading.Thread(target = Selling_Curve, args = (file_location_input.get(),)).start()
 
     if text_button.split()[0].lower() == "consolidation":
         file_path = filedialog.askopenfilename()
@@ -61,7 +68,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = real_work, args = (10,)).start()
+        threading.Thread(target = consolidation, args = (file_location_input.get(),)).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
 button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 100, command = lambda:button_click('Selling Curve Tool Selected'))
@@ -74,6 +81,5 @@ file_location.grid(row = 3, column = 0)
 file_location_input = Entry(root, width = 75, borderwidth=3, justify = CENTER)
 file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20)
 
-
-
+#creat the event loop for the GUI
 root.mainloop()

@@ -2,7 +2,6 @@
 #July 26 2022: I will make a function out of all the following procedure
 #check if you have all the package, if not install it
 def selling_curve_prep():
-        
     import os
     import subprocess
     import sys
@@ -12,11 +11,6 @@ def selling_curve_prep():
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
     for pkg in ['cx-oracle', 'cx-oracle', 'sqlalchemy', 'pandas', 'numpy', 'datetime', 'wget', 'zipp']:
         install(pkg)
-    import cx_Oracle
-    from sqlalchemy.engine import create_engine
-    import pandas as pd
-    import numpy as np
-    from datetime import date
     import wget
     from zipfile import ZipFile
 
@@ -28,6 +22,19 @@ def selling_curve_prep():
         with ZipFile('./instantclient-basic-windows.x64-21.6.0.0.0dbru.zip', 'r') as zipObj:
             # Extract all the contents of zip file in current directory
             zipObj.extractall()
+
+## Load the XX XX_HIST MOD Template
+# The xlsx is stored at K:\Logistics\_DFP Reports - Menswear\2022\F22 Setup
+# NOTE: sometimes the template has missing value for K column for example, you want to double chcck if the plate excel sheet is ok before you run the following code.
+def read_query_output(file_path):
+    import cx_Oracle
+    from sqlalchemy.engine import create_engine
+    import pandas as pd
+    import numpy as np
+    from datetime import date
+    import os
+
+    #prepare 
     lib_dir = './instantclient_21_6'
     name_string = ""
     for name in os.listdir(lib_dir):
@@ -35,10 +42,6 @@ def selling_curve_prep():
     #you just need to run the following snipet for once.
     cx_Oracle.init_oracle_client(lib_dir=lib_dir)
 
-## Load the XX XX_HIST MOD Template
-# The xlsx is stored at K:\Logistics\_DFP Reports - Menswear\2022\F22 Setup
-# NOTE: sometimes the template has missing value for K column for example, you want to double chcck if the plate excel sheet is ok before you run the following code.
-def read_query_output(file_path):
     #Read the excel file and get a list of sheets. Then chose and load the sheets.
     HIST_MOD_Template = pd.ExcelFile(file_path)
     #to read just 'TRACKER' sheet to dataframe

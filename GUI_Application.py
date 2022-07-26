@@ -4,6 +4,7 @@ from tkinter import ttk
 import time
 from tkinter import messagebox
 import threading
+from PIL import ImageTk, Image
 
 root = Tk()
 #give a title of the root window
@@ -20,7 +21,12 @@ e = Entry(root, width = 100, borderwidth=3, justify = CENTER)
 e.config(state = 'normal')
 e.insert(0, "This is to show you which tool you have chosen!")
 e.config(state = 'disabled')
-e.grid(row = 0, column = 0, columnspan = 4, padx = 5, pady = 20)
+e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20)
+
+#add logo to the app
+logo = ImageTk.PhotoImage(Image.open('logo.png').resize((170,30)))
+logo_label = Label(image = logo)
+logo_label.grid(row = 0, column = 0)
 
 #then I will create a progression bar for any tool being used
 progress_bar = ttk.Progressbar(root, orient = HORIZONTAL, length = 150, mode = 'indeterminate')
@@ -31,7 +37,7 @@ def real_work(n):
     progress_bar.stop()
     messagebox.showinfo(title = "Result", message = "Job Done!")
     #after the job is done remove the progression bar
-    progress_bar.destroy()
+    progress_bar.grid_forget()
 
 #define a function to update the text inside entry widget
 def button_click(text_button):
@@ -62,8 +68,7 @@ button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx
 button_selling.grid(row = 2, column = 0, columnspan = 2, sticky=NSEW)
 Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 100,command = lambda:button_click('Consolidation Tool Selected'))
 Consolidaiton.grid(row = 2, column = 2,columnspan = 2, sticky=NSEW)
-#parameters for each tool
-#you need the file path at least
+#parameters for each tool, you need the file path at least
 file_location = Label(root, text = "File Location:")
 file_location.grid(row = 3, column = 0)
 file_location_input = Entry(root, width = 75, borderwidth=3, justify = CENTER)

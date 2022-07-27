@@ -1,11 +1,12 @@
+import os
+import subprocess
+import sys
+import pkg_resources
+import os
 
 #July 26 2022: I will make a function out of all the following procedure
 #check if you have all the package, if not install it
 def selling_curve_prep():
-    import os
-    import subprocess
-    import sys
-    import pkg_resources
     def install(package):
         if (package not in {pkg.key for pkg in pkg_resources.working_set}):
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
@@ -32,7 +33,6 @@ def read_query_output(file_path):
     import pandas as pd
     import numpy as np
     from datetime import date
-    import os
 
     #prepare 
     lib_dir = './instantclient_21_6'

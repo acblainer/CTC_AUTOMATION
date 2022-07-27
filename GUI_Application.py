@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
+import tkinter.font as font
 import time
 from tkinter import messagebox
 import threading
@@ -35,12 +36,20 @@ progress_bar = ttk.Progressbar(root, orient = HORIZONTAL, length = 150, mode = '
 
 #funtion to do the selling curve work, the function to be used in another thread
 def Selling_Curve(file_path):
-    Selling_Curve_N_Consolidation.selling_curve_prep()
-    Selling_Curve_N_Consolidation.read_query_output(file_path)
-    progress_bar.stop()
-    messagebox.showinfo(title = "Result", message = "Job Done!")
-    #after the job is done remove the progression bar
-    progress_bar.grid_forget()
+    try:
+        Selling_Curve_N_Consolidation.selling_curve_prep()
+        Selling_Curve_N_Consolidation.read_query_output(file_path)
+    except Exception as err:
+        messagebox.showerror(title = "Something Wrong", message = err)
+        progress_bar.stop()
+        progress_bar.grid_forget()
+        file_location_input.delete(0,END)
+    else:
+        progress_bar.stop()
+        messagebox.showinfo(title = "Result", message = "Job Done!")
+        #after the job is done remove the progression bar
+        progress_bar.grid_forget()
+        file_location_input.delete(0,END)
 
 #funtion to do the selling curve work, the function to be used in another thread
 def consolidation(file_path):
@@ -59,7 +68,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = consolidation, args = (file_location_input.get(),)).start()
+        threading.Thread(target = Selling_Curve, args = (file_location_input.get(),)).start()
 
     if text_button.split()[0].lower() == "consolidation":
         file_path = filedialog.askopenfilename()
@@ -71,10 +80,12 @@ def button_click(text_button):
         threading.Thread(target = consolidation, args = (file_location_input.get(),)).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
-button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 100, command = lambda:button_click('Selling Curve Tool Selected'))
+button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 80, command = lambda:button_click('Selling Curve Tool Selected'))
 button_selling.grid(row = 2, column = 0, columnspan = 2, sticky=NSEW)
-Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 100,command = lambda:button_click('Consolidation Tool Selected'))
+button_selling['font'] = font.Font(size = 15)
+Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 80,command = lambda:button_click('Consolidation Tool Selected'))
 Consolidaiton.grid(row = 2, column = 2,columnspan = 2, sticky=NSEW)
+Consolidaiton['font'] = font.Font(size = 15)
 #parameters for each tool, you need the file path at least
 file_location = Label(root, text = "File Location:")
 file_location.grid(row = 3, column = 0)

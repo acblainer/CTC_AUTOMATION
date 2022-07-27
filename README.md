@@ -16,6 +16,9 @@ A small hack: how to install and import one package using script [linke](https:/
   - Question 1: what is dmdunit and why it has to start with C_
   - Question 2: implement the season (S1,S2,S3,S4) based on the season we are in right now
   - QUestion 3: do we need to remove duplicates when copy and paste the yellow portion of the Tracker to "2A_CE_UDT_HISTMODESETUP_F22 TEMPLATE FOR YONG"
+  - DIscussion with Leszek (july 27 2022): 
+    - find the outliers of the selling curve
+    - maybe suggest better way to make selling curve, say different stores have their own customized selling curve
 - Create the tool for store consolidation (july 7 2022)
   - I have created the Store class to track the information of a store, including its ranking in the whole store list, and making transfer between this store and the whole store list
   - Now I am implementing the logic like when and how I should transfer the store item

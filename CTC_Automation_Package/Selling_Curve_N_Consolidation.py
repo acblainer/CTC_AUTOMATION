@@ -173,3 +173,8 @@ def read_query_output(file_path):
     HIST_MOD_Template_TRACKER['MODEL_START_DATE'] = HIST_MOD_Template_TRACKER['MODEL_START_DATE'].dt.strftime('%Y/%m/%d')
     HIST_MOD_Template_TRACKER.loc[:,"STYLE":"RUN_FLAG"].to_excel(os.path.expanduser("~\\OneDrive - Canadian Tire"
                                                             "\\Desktop\\UDT_HISTMODESETUP_F22_TEMPLATE_" + os.getlogin() + ".xlsx"), index = False)
+
+
+#prepare the Consolidation
+def consolidation_prep():
+    pass

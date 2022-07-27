@@ -59,7 +59,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = Selling_Curve, args = (file_location_input.get(),)).start()
+        threading.Thread(target = consolidation, args = (file_location_input.get(),)).start()
 
     if text_button.split()[0].lower() == "consolidation":
         file_path = filedialog.askopenfilename()

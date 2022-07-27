@@ -53,7 +53,7 @@ def Selling_Curve(file_path):
         e.config(state = 'disabled')
 
 #funtion to do the selling curve work, the function to be used in another thread
-def consolidation(file_path):
+def consolidation_func(file_path):
     try:
         Selling_Curve_N_Consolidation.consolidation_prep()
         Selling_Curve_N_Consolidation.consolidation_output(file_path)
@@ -93,7 +93,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = consolidation, args = (file_location_input.get(),)).start()
+        threading.Thread(target = consolidation_func, args = (file_location_input.get(),)).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
 button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 80, command = lambda:button_click('Selling Curve Tool Selected'))

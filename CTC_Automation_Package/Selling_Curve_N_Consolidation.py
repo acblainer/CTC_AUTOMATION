@@ -40,8 +40,10 @@ def read_query_output(file_path):
     for name in os.listdir(lib_dir):
         name_string = name_string + name + " "
     #you just need to run the following snipet for once.
-    cx_Oracle.init_oracle_client(lib_dir=lib_dir)
-
+    try:
+        cx_Oracle.init_oracle_client(lib_dir=lib_dir)
+    except:
+        pass
     #Read the excel file and get a list of sheets. Then chose and load the sheets.
     HIST_MOD_Template = pd.ExcelFile(file_path)
     #to read just 'TRACKER' sheet to dataframe

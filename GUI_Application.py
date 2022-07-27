@@ -2,11 +2,11 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import ttk
 import tkinter.font as font
-import time
 from tkinter import messagebox
 import threading
 from PIL import ImageTk, Image
 from CTC_Automation_Package import Selling_Curve_N_Consolidation
+
 
 root = Tk()
 #give a title of the root window
@@ -33,7 +33,6 @@ logo_label.grid(row = 0, column = 0)
 #then I will create a progression bar for any tool being used
 progress_bar = ttk.Progressbar(root, orient = HORIZONTAL, length = 150, mode = 'indeterminate')
 
-
 #funtion to do the selling curve work, the function to be used in another thread
 def Selling_Curve(file_path):
     try:
@@ -41,19 +40,36 @@ def Selling_Curve(file_path):
         Selling_Curve_N_Consolidation.read_query_output(file_path)
     except Exception as err:
         messagebox.showerror(title = "Something Wrong", message = err)
-        progress_bar.stop()
-        progress_bar.grid_forget()
-        file_location_input.delete(0,END)
     else:
-        progress_bar.stop()
         messagebox.showinfo(title = "Result", message = "Job Done!")
+    finally:
+        progress_bar.stop()
         #after the job is done remove the progression bar
         progress_bar.grid_forget()
         file_location_input.delete(0,END)
+        e.config(state = 'normal')
+        e.delete(0, END)
+        e.insert(0, "This is to show you which tool you have chosen!")
+        e.config(state = 'disabled')
 
 #funtion to do the selling curve work, the function to be used in another thread
 def consolidation(file_path):
-    pass
+    try:
+        Selling_Curve_N_Consolidation.consolidation_prep()
+        Selling_Curve_N_Consolidation.consolidation_output(file_path)
+    except Exception as err:
+        messagebox.showerror(title = "Something Wrong", message = err)
+    else:
+        messagebox.showinfo(title = "Result", message = "Job Done!")
+    finally:
+        progress_bar.stop()
+        #after the job is done remove the progression bar
+        progress_bar.grid_forget()
+        file_location_input.delete(0,END)
+        e.config(state = 'normal')
+        e.delete(0, END)
+        e.insert(0, "This is to show you which tool you have chosen!")
+        e.config(state = 'disabled')
 
 #define a function to update the text inside entry widget
 def button_click(text_button):

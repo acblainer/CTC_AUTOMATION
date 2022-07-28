@@ -4,8 +4,21 @@ from tkinter import ttk
 import tkinter.font as font
 from tkinter import messagebox
 import threading
-from PIL import ImageTk, Image
 from CTC_Automation_Package import Selling_Curve_N_Consolidation
+import pkg_resources
+import subprocess
+import sys
+
+#install the prerequire
+def gui_prep():
+    def install(package):
+        if (package not in {pkg.key for pkg in pkg_resources.working_set}):
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
+    for pkg in ['pandas', 'numpy', 'pillow']:
+        install(pkg)
+
+gui_prep()
+from PIL import ImageTk, Image
 
 
 root = Tk()
@@ -23,7 +36,7 @@ e = Entry(root, width = 100, borderwidth=3, justify = CENTER)
 e.config(state = 'normal')
 e.insert(0, "This is to show you which tool you have chosen!")
 e.config(state = 'disabled')
-e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20)
+e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20, sticky = E)
 
 #add logo to the app
 logo = ImageTk.PhotoImage(Image.open('logo.png').resize((170,30)))
@@ -105,8 +118,14 @@ Consolidaiton['font'] = font.Font(size = 15)
 #parameters for each tool, you need the file path at least
 file_location = Label(root, text = "File Location:")
 file_location.grid(row = 3, column = 0)
-file_location_input = Entry(root, width = 75, borderwidth=3, justify = CENTER)
-file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20)
+file_location_input = Entry(root, width = 100, borderwidth=3, justify = CENTER)
+file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20, sticky = E)
+#get a trade mark 
+# trade = Label(root, text = "Mark's", bd = 1, relief = SUNKEN, anchor = E)
+# trade.grid(row = 4, column = 0, columnspan=4, sticky = EW)
+#create a frame to hold the parameter section
+# para_frame = LabelFrame(root, text = 'parameter', padx = 50, pady = 50)
+# para_frame.grid(row = 5, column = 0, columnspan = 4, padx = 10, pady = 10)
 
 #creat the event loop for the GUI
 root.mainloop()

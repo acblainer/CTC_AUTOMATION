@@ -3,3 +3,6 @@ RecShipFinal-SQL.ipynb
 #dont upload the cx_Oracle client files
 *.zip
 instantclient_21_6
+Consolidation_VS.py
+Consolidation_Exact_Match_VS.py
+Selling_Curve_Builder_VS.py

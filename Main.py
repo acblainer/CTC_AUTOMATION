@@ -39,7 +39,7 @@ e.config(state = 'disabled')
 e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20, sticky = E)
 
 #add logo to the app
-logo = ImageTk.PhotoImage(Image.open('logo.png').resize((170,30)))
+logo = ImageTk.PhotoImage(Image.open('./Image/logo.png').resize((170,30)))
 logo_label = Label(image = logo)
 logo_label.grid(row = 0, column = 0)
 

@@ -1,6 +1,6 @@
 # CTC_AUTOMATION
-We are initializing a project for automating massive manual work at CTC.  
-A small hack: how to install and import one package using script [linke](https://stackoverflow.com/questions/12332975/installing-python-module-within-code)
+We are initializing a project for automating massive manual work at CTC (Canadian Tire Corporation).  
+A small hack: how to install and import one package using script [link](https://stackoverflow.com/questions/12332975/installing-python-module-within-code)
 
 
 ## Name a list of tasks you think you want to automate.

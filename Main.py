@@ -124,8 +124,15 @@ file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20, sticky 
 # trade = Label(root, text = "Mark's", bd = 1, relief = SUNKEN, anchor = E)
 # trade.grid(row = 4, column = 0, columnspan=4, sticky = EW)
 #create a frame to hold the parameter section
-# para_frame = LabelFrame(root, text = 'parameter', padx = 50, pady = 50)
-# para_frame.grid(row = 5, column = 0, columnspan = 4, padx = 10, pady = 10)
+def create_new_window():
+    win = Toplevel(root)
+
+para_frame = LabelFrame(root, text = 'parameter')
+para_frame.grid(row = 5, column = 0)
+place_holder = Label(para_frame, text = "place holder")
+place_holder.pack()
+
+
 
 #creat the event loop for the GUI
 root.mainloop()

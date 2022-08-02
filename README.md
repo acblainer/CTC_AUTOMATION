@@ -57,5 +57,5 @@ Now we need to modify the code so that all the skus have a 100% match.
 
 
 ## Add GUI for easy use of all the algorithms
-For each algorithm, I am providing an interface for users for easy use. Aug 1 2022, I have got the frame and linked the funciton with actual function behind the wall. So far, Selling curve builder and Consolidation have been done. The interface looks like the following:
+For each algorithm, I am providing an interface for users for easy use. Aug 1 2022, I have got the frame and linked the funciton with actual function behind the wall. So far, Selling curve builder and Consolidation have been done. The interface looks like the following:  
 ![Main Interface](./Image/Interface.png)

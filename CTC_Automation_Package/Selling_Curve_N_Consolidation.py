@@ -29,7 +29,7 @@ def selling_curve_prep():
 ## Load the XX XX_HIST MOD Template
 # The xlsx is stored at K:\Logistics\_DFP Reports - Menswear\2022\F22 Setup
 # NOTE: sometimes the template has missing value for K column for example, you want to double chcck if the plate excel sheet is ok before you run the following code.
-def read_query_output(file_path):
+def read_query_output(file_path, **kargs):
     import cx_Oracle
     from sqlalchemy.engine import create_engine
     import pandas as pd
@@ -63,13 +63,13 @@ def read_query_output(file_path):
     HIST_MOD_Template_TRACKER['SUBMIT_DATE'] = pd.Timestamp("today").strftime('%Y/%m/%d')
 
     #Connect to the Oracle database using SQLAIchemy (recommended)
-    DIALECT = 'oracle'
-    SQL_DRIVER = 'cx_oracle'
-    USERNAME = "ypfu" #enter your username
-    PASSWORD = "cT4K3tgta8NnS!QK" #enter your password
-    HOST = "p9cpwpjdadb01" #enter the oracle db host url
-    PORT = 25959 # enter the oracle port number
-    SERVICE = "FR01PR" # enter the oracle db service name
+    DIALECT = kargs['DIALECT'] #'oracle'
+    SQL_DRIVER = kargs['SQL_DRIVER']#cx_oracle'
+    USERNAME = kargs['USERNAME']#"ypfu" #enter your username
+    PASSWORD = kargs['PASSWORD']#"cT4K3tgta8NnS!QK" #enter your password
+    HOST = kargs['HOST']#"p9cpwpjdadb01" #enter the oracle db host url
+    PORT = kargs['PORT']#25959 # enter the oracle port number
+    SERVICE = kargs['SERVICE']#"FR01PR" # enter the oracle db service name
     ENGINE_PATH_WIN_AUTH = DIALECT + '+' + SQL_DRIVER + '://' + USERNAME + ':' + PASSWORD +'@' + HOST + ':' + str(PORT) + '/?service_name=' + SERVICE
 
     #scan through each row of the dataframe to retrive data from the database

@@ -3,3 +3,5 @@ RecShipFinal-SQL.ipynb
 #dont upload the cx_Oracle client files
 *.zip
 instantclient_21_6
+#not including test file
+sqlite.py

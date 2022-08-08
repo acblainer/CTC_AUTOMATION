@@ -4,6 +4,7 @@ from tkinter import ttk
 import tkinter.font as font
 from tkinter import messagebox
 import threading
+from threading import Thread #to extend Thread class
 from CTC_Automation_Package import Selling_Curve_N_Consolidation
 import pkg_resources
 import subprocess
@@ -80,6 +81,24 @@ def create_sql_lite_conn(db_file, **kargs):
             cur.close()
             conn.close()
 
+
+#Extend Thread class so that I can decide if I want to write the credential to the sqlite database or not
+#https://stackoverflow.com/questions/2829329/catch-a-threads-exception-in-the-caller-thread
+#https://stackoverflow.com/questions/34742026/python-pass-argument-to-thread-class
+class Capture_Child_Thread_Error(Thread):
+    def __init__(self, func, *args):
+        #daemon= True tells this thread to end as well when the caller thread is killed
+        Thread.__init__(self, daemon=True)
+        self.args = args
+        self.func =func
+        self.success = 1 #indicat there is no error running the function
+    #override the run function
+    def run(self):
+        success_result = self.func(self.args[0],self.args[1])
+        if not success_result:
+            self.success = 0 #indicat there is an error running the function
+
+
 #define what will happen when you click OK button
 def ok_btn_func():
     user_name = user_entry.get()
@@ -90,12 +109,12 @@ def ok_btn_func():
     progress_bar.start(18)
     selling_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':user_name, 
                                     'PASSWORD':password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
-    try:
-        threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict)).start()
-    except Exception as err:
-        messagebox.showerror(title = "Something Wrong", message = err)
+    thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, file_location_input.get(), selling_para_dict)
+    thread_selling_curve.start()
+    # thread_selling_curve.join()
+    # threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
     #if nothing is wrong, write this credential to the database
-    else:
+    if thread_selling_curve.success:
         create_sql_lite_conn('./access.db', DB = "selling", USERNAME = user_name, PASSWORD = password)
 
 #Define a function to accecpt username and password if necessary
@@ -133,8 +152,10 @@ def Selling_Curve(file_path, kargs):
         Selling_Curve_N_Consolidation.read_query_output(file_path, **kargs)
     except Exception as err:
         messagebox.showerror(title = "Something Wrong", message = err)
+        return 0
     else:
         messagebox.showinfo(title = "Result", message = "Job Done!")
+        return 1
     finally:
         progress_bar.stop()
         #after the job is done remove the progression bar
@@ -176,7 +197,6 @@ def button_click(text_button):
         ##if this funciton returns something then we know the connection is success, 
         # #we will use the info to connect oracle, and not fire up the parameter window
         credential_sqlite = create_sql_lite_conn('./access.db',DB = "selling")
-        print(credential_sqlite)
         if credential_sqlite:
             #put the progression bar in there
             progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
@@ -184,13 +204,13 @@ def button_click(text_button):
             #start the real job in another thread
             selling_para_dict = {'DIALECT':credential_sqlite[2], 'SQL_DRIVER':credential_sqlite[3], 'USERNAME':credential_sqlite[4], 
                                     'PASSWORD':credential_sqlite[5], 'HOST':credential_sqlite[6], 'PORT':credential_sqlite[7],'SERVICE':credential_sqlite[8]}
-            threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict)).start()
+            threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
         else:
             #fire up the parameter window
-            try:
-                para_window(root)
-            except Exception as err:
-                messagebox.showerror(title = "Something Wrong", message = err)
+            # try:
+            para_window(root)
+            # except Exception as err:
+            #     messagebox.showerror(title = "Something Was Wrong", message = err)
                 
 
     if text_button.split()[0].lower() == "consolidation":
@@ -200,7 +220,7 @@ def button_click(text_button):
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread
-        threading.Thread(target = consolidation_func, args = (file_location_input.get(),)).start()
+        threading.Thread(target = consolidation_func, args = (file_location_input.get(),), daemon= True).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
 button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 80, command = lambda:button_click('Selling Curve Tool Selected'))

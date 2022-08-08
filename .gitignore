@@ -5,3 +5,4 @@ RecShipFinal-SQL.ipynb
 instantclient_21_6
 #not including test file
 sqlite.py
+thread.py

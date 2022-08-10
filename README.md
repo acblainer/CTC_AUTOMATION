@@ -62,5 +62,6 @@ For each algorithm, I am providing an interface for users for easy use. Aug 1 20
 ![Main Interface](./Image/Interface.png)
 
 ## Create a sqlite database to store credentials
+This is a difficult one to implement, because the working horse for the actual algorithm is done in another thread (other than the main thread). In this case, the updating database is done in this thread while the main thread is used to check if the credentials are in the database or not.
 
 ![credentials](./Image/sqlite.png)

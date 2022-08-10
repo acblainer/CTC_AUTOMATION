@@ -6,3 +6,5 @@ instantclient_21_6
 #not including test file
 sqlite.py
 thread.py
+#not track sqlite db for credentials
+*.db

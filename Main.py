@@ -96,14 +96,23 @@ class Capture_Child_Thread_Error(Thread):
     def run(self):
         try:
             self.func(self.args[0],self.args[1])
-        except:
-            pass
+        except Exception as err:
+            messagebox.showerror(title = "Something Wrong", message = err)
         else:
+            messagebox.showinfo(title = "Result", message = "Job Done!")
             if self.db_indicator:
                 #if nothing is wrong, write this credential to the database
                 create_sql_lite_conn('./access.db', DB = "selling", USERNAME = user_name, PASSWORD = password)
-
-
+        finally:
+            #when the code comes here, clear out the progress bar
+            progress_bar.stop()
+            #after the job is done remove the progression bar
+            progress_bar.grid_forget()
+            file_location_input.delete(0,END)
+            e.config(state = 'normal')
+            e.delete(0, END)
+            e.insert(0, "This is to show you which tool you have chosen!")
+            e.config(state = 'disabled')
 
 #define what will happen when you click OK button
 def ok_btn_func():
@@ -117,7 +126,8 @@ def ok_btn_func():
     progress_bar.start(18)
     selling_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':user_name, 
                                     'PASSWORD':password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
-    thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, file_location_input.get(), selling_para_dict)
+    #since you already come to the page to ask you enter, I want to store this credential into the DB, so True
+    thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, True, file_location_input.get(), selling_para_dict)
     thread_selling_curve.start()
     # threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
 
@@ -151,23 +161,9 @@ def para_window(root):
 
 #funtion to do the selling curve work, the function to be used in another thread
 def Selling_Curve(file_path, kargs):
-    try:
-        Selling_Curve_N_Consolidation.selling_curve_prep()
-        #I will pass a dictionary to the Selling_Curve but then unpack it in the read_query_output
-        Selling_Curve_N_Consolidation.read_query_output(file_path, **kargs)
-    except Exception as err:
-        messagebox.showerror(title = "Something Wrong", message = err)
-    else:
-        messagebox.showinfo(title = "Result", message = "Job Done!")
-    finally:
-        progress_bar.stop()
-        #after the job is done remove the progression bar
-        progress_bar.grid_forget()
-        file_location_input.delete(0,END)
-        e.config(state = 'normal')
-        e.delete(0, END)
-        e.insert(0, "This is to show you which tool you have chosen!")
-        e.config(state = 'disabled')
+    Selling_Curve_N_Consolidation.selling_curve_prep()
+    #I will pass a dictionary to the Selling_Curve but then unpack it in the read_query_output
+    Selling_Curve_N_Consolidation.read_query_output(file_path, **kargs)
 
 #funtion to do the selling curve work, the function to be used in another thread
 def consolidation_func(file_path):
@@ -207,13 +203,13 @@ def button_click(text_button):
             #start the real job in another thread
             selling_para_dict = {'DIALECT':credential_sqlite[2], 'SQL_DRIVER':credential_sqlite[3], 'USERNAME':credential_sqlite[4], 
                                     'PASSWORD':credential_sqlite[5], 'HOST':credential_sqlite[6], 'PORT':credential_sqlite[7],'SERVICE':credential_sqlite[8]}
-            threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
+            #because the credential is already found in the database, there is no need to write the info into database, so False
+            thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, False, file_location_input.get(), selling_para_dict)
+            thread_selling_curve.start()
+            # threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
         else:
             #fire up the parameter window
-            # try:
             para_window(root)
-            # except Exception as err:
-            #     messagebox.showerror(title = "Something Was Wrong", message = err)
                 
 
     if text_button.split()[0].lower() == "consolidation":
@@ -222,7 +218,7 @@ def button_click(text_button):
         #put the progression bar in there
         progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
-        #start the real job in another thread
+        #start the real job in another thread, daemon= True tells the thread to shut down as well when the main thread is off
         threading.Thread(target = consolidation_func, args = (file_location_input.get(),), daemon= True).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton

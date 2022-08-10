@@ -86,21 +86,29 @@ def create_sql_lite_conn(db_file, **kargs):
 #https://stackoverflow.com/questions/2829329/catch-a-threads-exception-in-the-caller-thread
 #https://stackoverflow.com/questions/34742026/python-pass-argument-to-thread-class
 class Capture_Child_Thread_Error(Thread):
-    def __init__(self, func, *args):
+    def __init__(self, func, db_indicator, *args):
         #daemon= True tells this thread to end as well when the caller thread is killed
         Thread.__init__(self, daemon=True)
         self.args = args
         self.func =func
-        self.success = 1 #indicat there is no error running the function
+        self.db_indicator = db_indicator
     #override the run function
     def run(self):
-        success_result = self.func(self.args[0],self.args[1])
-        if not success_result:
-            self.success = 0 #indicat there is an error running the function
+        try:
+            self.func(self.args[0],self.args[1])
+        except:
+            pass
+        else:
+            if self.db_indicator:
+                #if nothing is wrong, write this credential to the database
+                create_sql_lite_conn('./access.db', DB = "selling", USERNAME = user_name, PASSWORD = password)
+
 
 
 #define what will happen when you click OK button
 def ok_btn_func():
+    global user_name
+    global password
     user_name = user_entry.get()
     password = pass_entry.get()
     top.destroy()
@@ -111,11 +119,8 @@ def ok_btn_func():
                                     'PASSWORD':password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
     thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, file_location_input.get(), selling_para_dict)
     thread_selling_curve.start()
-    # thread_selling_curve.join()
     # threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
-    #if nothing is wrong, write this credential to the database
-    if thread_selling_curve.success:
-        create_sql_lite_conn('./access.db', DB = "selling", USERNAME = user_name, PASSWORD = password)
+
 
 #Define a function to accecpt username and password if necessary
 def para_window(root):
@@ -152,10 +157,8 @@ def Selling_Curve(file_path, kargs):
         Selling_Curve_N_Consolidation.read_query_output(file_path, **kargs)
     except Exception as err:
         messagebox.showerror(title = "Something Wrong", message = err)
-        return 0
     else:
         messagebox.showinfo(title = "Result", message = "Job Done!")
-        return 1
     finally:
         progress_bar.stop()
         #after the job is done remove the progression bar

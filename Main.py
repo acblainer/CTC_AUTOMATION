@@ -30,6 +30,7 @@ root = Tk()
 root.title("CTC Automation Tools")
 #provide a default size of the window
 root.geometry("600x400")
+#https://stackoverflow.com/questions/45847313/what-does-weight-do-in-tkinter
 root.grid_columnconfigure(0,weight = 1)
 root.grid_columnconfigure(1,weight = 1)
 root.grid_columnconfigure(2,weight = 1)
@@ -40,7 +41,7 @@ e = Entry(root, width = 100, borderwidth=3, justify = CENTER)
 e.config(state = 'normal')
 e.insert(0, "This is to show you which tool you have chosen!")
 e.config(state = 'disabled')
-e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20, sticky = E)
+e.grid(row = 0, column = 1, columnspan = 3, padx = 5, pady = 20, sticky = EW)
 
 #add logo to the app
 logo = ImageTk.PhotoImage(Image.open('./Image/logo.png').resize((170,30)))
@@ -232,7 +233,7 @@ Consolidaiton['font'] = font.Font(size = 15)
 file_location = Label(root, text = "File Location:")
 file_location.grid(row = 3, column = 0)
 file_location_input = Entry(root, width = 100, borderwidth=3, justify = CENTER)
-file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20, sticky = E)
+file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20, sticky = EW)
 
 #creat the event loop for the GUI
 root.mainloop()

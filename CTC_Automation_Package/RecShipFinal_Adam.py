@@ -161,7 +161,7 @@ def recShip_output(style_list, kargs):
     NewQ = final1d.Qty.sum()
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\Revised_RecShip2_" + os.getlogin() + ".xlsx"), engine='xlsxwriter')
+    writer = pd.ExcelWriter(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\Revised_RecShip2_" + OneDay.strftime("%m-%d-%y") + os.getlogin() + ".xlsx"), engine='xlsxwriter')
 
     # Write each dataframe to a different worksheet.
     final1d.to_excel(writer, sheet_name = OneDay.strftime("%m-%d-%Y"))

@@ -27,6 +27,7 @@ A small hack: how to install and import one package using script [link](https://
   
 **Adam**: (not tracked)
 - (July 7 2022): Heres my notebook file for the recship updates. I noticed a small part of the code doesnt work on the anaconda I personally downloaded because I originally built it on the company anaconda which has an old version of pandas. It might not work for you but I'm pretty sure its an easy fix, it just has something to do with the fillna code.
+- (August 25 2022): adjust GUI to accept his code of funciton.
 
 
 ## Update for consolidaiton: find exact match for consolidation

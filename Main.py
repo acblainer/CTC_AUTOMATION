@@ -6,6 +6,7 @@ from tkinter import messagebox
 import threading
 from threading import Thread #to extend Thread class
 from CTC_Automation_Package import Selling_Curve_N_Consolidation
+from CTC_Automation_Package import RecShipFinal_Adam
 import pkg_resources
 import subprocess
 import sys
@@ -123,7 +124,7 @@ def ok_btn_func():
     password = pass_entry.get()
     top.destroy()
     #put the progression bar in there
-    progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
+    progress_bar.grid(row = 5, column = 1, columnspan = 2, padx = 10, pady = 20)
     progress_bar.start(18)
     selling_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':user_name, 
                                     'PASSWORD':password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
@@ -131,7 +132,6 @@ def ok_btn_func():
     thread_selling_curve = Capture_Child_Thread_Error(Selling_Curve, True, file_location_input.get(), selling_para_dict)
     thread_selling_curve.start()
     # threading.Thread(target = Selling_Curve, args = (file_location_input.get(), selling_para_dict), daemon= True).start()
-
 
 #Define a function to accecpt username and password if necessary
 def para_window(root):
@@ -158,7 +158,40 @@ def para_window(root):
     #disable the underlying window when a second window pops up
     # top.wait_visibility()
     # top.grab_set_global()
-    
+
+#define a function to actually run the work for RecShip
+def ok_btn_style_func():
+    #put the progression bar in there
+    progress_bar.grid(row = 5, column = 1, columnspan = 2, padx = 10, pady = 20)
+    progress_bar.start(18)
+    adam_user_name = None
+    adam_password = None
+    recship_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':adam_user_name, 
+                        'PASSWORD':adam_password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
+    top_style.destroy()
+
+#define a function to accept a list of styles
+def style_window(root):
+    #open a new window
+    global top_style
+    top_style = Toplevel(root)
+    top_style.title("A list of styles")
+    top_style.geometry("600x300")
+    #username label
+    global list_entry
+    list_label = Label(top_style, text = "A list of styles:")
+    #default list of styles
+    default_styles = "A list of styles with singe quotation mark, and separated by , as follows:\n 'S_6AREDHASHBSPTS2', 'S_75729', 'S_79645', 'S_79646'"
+    list_text = Text(top_style, height = 10, width = 52)
+    #define a OK button
+    ok_btn = Button(top_style, text = "OK", command = ok_btn_style_func, width = 5)
+    #put them on the window
+    list_label.pack()
+    list_text.pack(fill = BOTH)
+    ok_btn.pack()
+    #provide a default look of list
+    list_text.insert(END, default_styles)
+
 
 #funtion to do the selling curve work, the function to be used in another thread
 def Selling_Curve(file_path, kargs):
@@ -184,6 +217,7 @@ def consolidation_func(file_path):
         e.delete(0, END)
         e.insert(0, "This is to show you which tool you have chosen!")
         e.config(state = 'disabled')
+
 
 #define a function to update the text inside entry widget
 def button_click(text_button):
@@ -222,6 +256,12 @@ def button_click(text_button):
         #start the real job in another thread, daemon= True tells the thread to shut down as well when the main thread is off
         threading.Thread(target = consolidation_func, args = (file_location_input.get(),), daemon= True).start()
 
+
+    if text_button.split()[0].lower() == "recship":
+        style_window(root)
+
+    
+
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
 button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 40, command = lambda:button_click('Selling Curve Tool Selected'))
 button_selling.grid(row = 2, column = 0, columnspan = 2, sticky=NSEW)
@@ -230,7 +270,7 @@ Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx 
 Consolidaiton.grid(row = 2, column = 2,columnspan = 2, sticky=NSEW)
 Consolidaiton['font'] = font.Font(size = 15)
 #creat another button to run Adam's code
-button_recship = Button(root, text = "RecShip Tool", borderwidth = 3, padx = 70, pady = 40)
+button_recship = Button(root, text = "RecShip Tool", borderwidth = 3, padx = 70, pady = 40,command = lambda:button_click('RecShip Tool Selected'))
 button_recship.grid(row = 3, column = 0, columnspan = 4, sticky=NSEW)
 button_recship['font'] = font.Font(size = 15)
 #parameters for each tool, you need the file path at least

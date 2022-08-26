@@ -24,7 +24,7 @@ def recShip_prep():
             zipObj.extractall()
 
 
-def recShip_output(style_list, **kargs):
+def recShip_output(style_list, kargs):
     import cx_Oracle
     from sqlalchemy.engine import create_engine
     import pandas as pd
@@ -52,7 +52,7 @@ def recShip_output(style_list, **kargs):
     SERVICE = kargs['SERVICE']#"FR01PR" # enter the oracle db service name
     ENGINE_PATH_WIN_AUTH = DIALECT + '+' + SQL_DRIVER + '://' + USERNAME + ':' + PASSWORD +'@' + HOST + ':' + str(PORT) + '/?service_name=' + SERVICE
     engine = create_engine(ENGINE_PATH_WIN_AUTH)
-    
+
     db = pd.read_sql_query(f'''
     Select i.U_CATEGORY,i.U_COMMODITY, i.u_style, i.u_choice, i.U_SPECIFICCOLORNAME, i.U_SIZE_ONE, R.ITEM, r.source, r.dest, r.QTY, R.ORDERPLACEDATE,r.SCHEDARRIVDATE, s.OH ,dmd.u_permretailprice retail
     , (SELECT SUM(nvl(f.qty,0)) FROM scpomgr.cds_fcstview f where f.dmdunit = s.item and f.loc = s.loc and f.startdate between sysdate - 7 and sysdate +42) "total fcst"
@@ -61,7 +61,7 @@ def recShip_output(style_list, **kargs):
     INNER JOIN SCPOMGR.SKU S ON S.ITEM = r.ITEM AND S.LOC = r.dest
     inner join SCPOMGR.dmdunit dmd on i.item = dmd.dmdunit
     where
-    i.u_style in ({','.join(map(str(style_list)))})
+    i.u_style in ({','.join(map(str, style_list))})
     and R.source IN ('000155')--'V100033'
     --and r.dest in ('000357','000534','000536','000540') 
     and R.ORDERPLACEDATE between sysdate - 0 and sysdate +31
@@ -161,7 +161,7 @@ def recShip_output(style_list, **kargs):
     NewQ = final1d.Qty.sum()
 
     # Create a Pandas Excel writer using XlsxWriter as the engine.
-    writer = pd.ExcelWriter('Revised_RecShip2.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter(os.path.expanduser("~\\OneDrive - Canadian Tire\\Desktop\\Revised_RecShip2_" + os.getlogin() + ".xlsx"), engine='xlsxwriter')
 
     # Write each dataframe to a different worksheet.
     final1d.to_excel(writer, sheet_name = OneDay.strftime("%m-%d-%Y"))
@@ -174,8 +174,6 @@ def recShip_output(style_list, **kargs):
 
     text = "The function postponed {} RecShips scheduled for tomorrow. {} RecShips were promoted from next week. {} were prioritized because of low supply. The total daily Qty went from {} to {}".format(postpone, promote, priority, OrigQ, NewQ)
     summary.insert_textbox(0, 0, text)
-
-    workbook.close()
 
 
     # Close the Pandas Excel writer and output the Excel file.

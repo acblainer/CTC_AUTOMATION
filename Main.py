@@ -161,14 +161,34 @@ def para_window(root):
 
 #define a function to actually run the work for RecShip
 def ok_btn_style_func():
+    #https://stackoverflow.com/questions/14824163/how-to-get-the-input-from-the-tkinter-text-widget
+    style_list = list_text.get("1.0", 'end-1c')
+    style_list = ''.join(style_list.split()).rstrip(',').rsplit(",")
+    top_style.destroy()
     #put the progression bar in there
     progress_bar.grid(row = 5, column = 1, columnspan = 2, padx = 10, pady = 20)
     progress_bar.start(18)
-    adam_user_name = None
-    adam_password = None
-    recship_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':adam_user_name, 
-                        'PASSWORD':adam_password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
-    top_style.destroy()
+    try:
+        adam_user_name = "ablaine"
+        adam_password = "fUtk!n8MgYGSKUnJ"
+        recship_para_dict = {'DIALECT':'oracle', 'SQL_DRIVER':'cx_oracle', 'USERNAME':adam_user_name, 
+                            'PASSWORD':adam_password, 'HOST':'p9cpwpjdadb01', 'PORT':25959,'SERVICE':'FR01PR'}
+        RecShipFinal_Adam.recShip_prep()
+        threading.Thread(target = RecShipFinal_Adam.recShip_output, args = (style_list, recship_para_dict), daemon= True).start()
+        # RecShipFinal_Adam.recShip_output(style_list, **recship_para_dict)
+    except Exception as err:
+        messagebox.showerror(title = "Something Wrong", message = err)
+    finally:
+        #when the code comes here, clear out the progress bar
+        progress_bar.stop()
+        #after the job is done remove the progression bar
+        progress_bar.grid_forget()
+        e.config(state = 'normal')
+        e.delete(0, END)
+        e.insert(0, "This is to show you which tool you have chosen!")
+        e.config(state = 'disabled')
+
+
 
 #define a function to accept a list of styles
 def style_window(root):
@@ -178,7 +198,7 @@ def style_window(root):
     top_style.title("A list of styles")
     top_style.geometry("600x300")
     #username label
-    global list_entry
+    global list_text
     list_label = Label(top_style, text = "A list of styles:")
     #default list of styles
     default_styles = "A list of styles with singe quotation mark, and separated by , as follows:\n 'S_6AREDHASHBSPTS2', 'S_75729', 'S_79645', 'S_79646'"

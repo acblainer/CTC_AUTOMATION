@@ -29,7 +29,7 @@ root = Tk()
 #give a title of the root window
 root.title("CTC Automation Tools")
 #provide a default size of the window
-root.geometry("600x400")
+root.geometry("600x500")
 #https://stackoverflow.com/questions/45847313/what-does-weight-do-in-tkinter
 root.grid_columnconfigure(0,weight = 1)
 root.grid_columnconfigure(1,weight = 1)
@@ -199,7 +199,7 @@ def button_click(text_button):
         credential_sqlite = create_sql_lite_conn('./access.db',DB = "selling")
         if credential_sqlite:
             #put the progression bar in there
-            progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
+            progress_bar.grid(row = 5, column = 1, columnspan = 2, padx = 10, pady = 20)
             progress_bar.start(18)
             #start the real job in another thread
             selling_para_dict = {'DIALECT':credential_sqlite[2], 'SQL_DRIVER':credential_sqlite[3], 'USERNAME':credential_sqlite[4], 
@@ -217,23 +217,27 @@ def button_click(text_button):
         file_path = filedialog.askopenfilename()
         file_location_input.insert(0,file_path)
         #put the progression bar in there
-        progress_bar.grid(row = 4, column = 1, columnspan = 2, padx = 10, pady = 20)
+        progress_bar.grid(row = 5, column = 1, columnspan = 2, padx = 10, pady = 20)
         progress_bar.start(18)
         #start the real job in another thread, daemon= True tells the thread to shut down as well when the main thread is off
         threading.Thread(target = consolidation_func, args = (file_location_input.get(),), daemon= True).start()
 
 #create 2 buttons one for Selling Curve and another one for Consolidaiton
-button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 80, command = lambda:button_click('Selling Curve Tool Selected'))
+button_selling = Button(root, text = "Selling Curve Tool", borderwidth = 3, padx = 70, pady = 40, command = lambda:button_click('Selling Curve Tool Selected'))
 button_selling.grid(row = 2, column = 0, columnspan = 2, sticky=NSEW)
 button_selling['font'] = font.Font(size = 15)
-Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 80,command = lambda:button_click('Consolidation Tool Selected'))
+Consolidaiton = Button(root, text = "Consolidation Tool", borderwidth = 3, padx = 70, pady = 40,command = lambda:button_click('Consolidation Tool Selected'))
 Consolidaiton.grid(row = 2, column = 2,columnspan = 2, sticky=NSEW)
 Consolidaiton['font'] = font.Font(size = 15)
+#creat another button to run Adam's code
+button_recship = Button(root, text = "RecShip Tool", borderwidth = 3, padx = 70, pady = 40)
+button_recship.grid(row = 3, column = 0, columnspan = 4, sticky=NSEW)
+button_recship['font'] = font.Font(size = 15)
 #parameters for each tool, you need the file path at least
 file_location = Label(root, text = "File Location:")
-file_location.grid(row = 3, column = 0)
+file_location.grid(row = 4, column = 0)
 file_location_input = Entry(root, width = 100, borderwidth=3, justify = CENTER)
-file_location_input.grid(row = 3, column = 1, columnspan = 3, pady = 20, sticky = EW)
+file_location_input.grid(row = 4, column = 1, columnspan = 3, pady = 20, sticky = EW)
 
 #creat the event loop for the GUI
 root.mainloop()

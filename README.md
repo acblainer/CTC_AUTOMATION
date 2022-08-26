@@ -65,3 +65,8 @@ For each algorithm, I am providing an interface for users for easy use. Aug 1 20
 This is a difficult one to implement, because the working horse for the actual algorithm is done in another thread (other than the main thread). In this case, the updating database is done in this thread while the main thread is used to check if the credentials are in the database or not.
 
 ![credentials](./Image/sqlite.png)
+
+## Data Science Project
+1. Top styles in each province so we can increase safety stock
+2. Association (Based on the order # and not by split shipment, can you tell me what products are being ordered together so that we can co-locate the product in the same store so that all future orders can be shipped from a single location)
+3. Prediction of selling curve

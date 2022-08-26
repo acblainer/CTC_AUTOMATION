@@ -137,7 +137,7 @@ def recShip_output(style_list, kargs):
     promote = db2.STATUS.str.count("Promoted").sum()
     postpone = db2.STATUS.str.count("Removed").sum()
     priority = db2.STATUS.str.count("Prioritized").sum()
-    db2.loc[:,'ORDERPLACEDATE'] = pd.to_datetime(db2.loc[:,'ORDERPLACEDATE'])
+    db2['ORDERPLACEDATE'] = pd.to_datetime(db2['ORDERPLACEDATE'])
 
 
     final1d = db2.copy()
